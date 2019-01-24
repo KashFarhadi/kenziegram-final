@@ -7,11 +7,26 @@
     <title>Create User</title>
 </head>
 <body>
+  <fieldset>
     <form id="user-create-form" action="./api/user" method="post">
-        
-        <!-- Add user input fields here -->
+      <!-- put this back in later *action="./api/user" method="post" -->
 
-        <button type="submit">Create User</button>
+      Username:<br>
+      <input type="text" name="name"><br>
+      
+      Email:<br>
+      <input type="text" name="email"><br>
+      
+      Happy Place:<br>
+      <input type="text" name="happyplace"><br>
+
+      First Pet:<br>
+      <input type="text" name="firstpet"><br>
+      
+      <button type="submit">Create User</button>
     </form>
+  </fieldset>
+
+    <script src= "index.js"></script>
 </body>
 </html>
