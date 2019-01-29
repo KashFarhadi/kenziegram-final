@@ -24,7 +24,7 @@ app.use(express.static(path))
 // a tags lets things be clickable
 
 app.post('/upload', upload.single('image'), (req, res) => {
-  caches.log("Uploaded: " + req.file.filename)
+  console.log("Uploaded: " + req.file.filename)
     res.send(`
     <h1> Title - Upload successful </h1>
     <a href = "/"><button>Back</button></a><br />
