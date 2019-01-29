@@ -1,46 +1,69 @@
 const express = require('express')
-const path = require('path')
+const multer = require("multer"); //does the file uploading
 
+const path = './public/uploads'
+const upload = multer({dest: path})
+const port = process.envPORT || 3000;
 const app = express()
-const publicFolderPath = path.join(__dirname, 'public')
+const fs = require('fs');
 
-app.use(express.json())
-app.use(express.static(publicFolderPath))
+// can use next to tell express we're done with this and you can pass it to the next function.
+// middleware is just js functions between sending and receiving responses. 
 
-let users = []
+app.use(express.static(path))
+// app.use(express.json()) is used only with response of json. 
+// fetch and sent a request to send JSON.
+// now we are using the form tag that does the request in correct type already
 
-// add POST request listener here
-app.post('/api/user', (req, res) => {
-  // console.log(res.body) // this is a server side console, will show in terminal
+// what do i need to do to form a response. Send back another HTML page.
+// have chrome load a new page. UPLOAD SUCCESSFUL and show the image and a back button.
+// title like upload successful and 
+// title -Upload successful
+//<img src = "${req.file.filename}"/>
+// <a href = "/>Back</a>"
+// a tags lets things be clickable
 
-  let taken = false   // for the first time through, Set it to false
-      // because when the array is empty  it will skip through the for loop
-      // we want to push anything into the array since its impossible to have duplicates
-
-  for (user of users) {
-    if (user.username === req.body.username) {
-      taken = true
-      break
-    } else {
-      taken = false
-    }
-  }
-  if (taken) {
-    res.status(409).send()        
-    //.send() accepts an optional parameter which lets you specify the request's body; this is primarily used for requests such as PUT. If the request method is GET or HEAD, the body parameter is ignored and the request body is set to null
-    throw new Error ("Username is  Taken") 
-  } else {
-    req.body.id = Math.random() * (10 ^16)   // give random IDs to req.body
-    users.push(req.body)
-    res.status(201).send()
-    console.log(users)
-  }
+app.post('/upload', upload.single('image'), (req, res) => {
+  caches.log("Uploaded: " + req.file.filename)
+    res.send(`
+    <h1> Title - Upload successful </h1>
+    <a href = "/"><button>Back</button></a><br />
+    <img src = ${req.file.filename} height = 300px />
+    `
+    )
 })
+// need to create form to upload an image
+//    write a <form> tag using template literals.
+//     form attributes: action= "/upload", method = "POST" <- default is get.
+//     enctype= "text/plain" ="multipart/form-data" ="x-www-urlencoded"
 
-let port = 3000     // so that we cna pass it into the app.listen function below
+// anything thats not a node module we don't need to do npm install. For fr.readdir
+// we need to get all the filenames in the uploads directory. 
+// for each filename, create and `<img src="">` <-backtick characters string to upload the images.
+/// fr readdir returns and array of all the filenames in that directory
+// `<img src = "/uploads/${filename}">. also need to display a form to upload an image.
+
+app.get("/", function (req, res) {
+  let feed = ``;
+  fs.readdir(path, function (err, items) {
+    console.log(items);
+    for (let i = 0; i < items.length; i ++){
+      feed += `<img src = ${items[i]} height = 150px><br />`;
+    }
+    res.send(
+      `<h1>Welcome to Kenziegram!</h1>
+        <form action = "/upload" method = "POST" enctype ="multipart/form-data">
+          <input type = 'file' name = 'image' />  
+          <input type = 'submit' />
+          </form>
+          ${feed}
+          `
+          // could also do it with arrays and .push instead of feed. would have to 
+          // use array.join at the end to combine them
+    );
+  })
+})
 
 app.listen(port, () => {
   console.log(`listening on port ${port}`)
 })
-
-// make sure you go to http://localhost:3000/ to see this page from the server
